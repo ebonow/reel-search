@@ -1,0 +1,38 @@
+.movie-item {
+    list-style: none;
+    flex: 0 0 19%;
+    margin: 10px 0 20px;
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .2s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.movie-item:hover {
+    transform: scale(1.1);
+}
+
+.movie-item-poster {
+    position: relative;
+    height: 180px;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    margin-bottom: 10px;
+}
+
+.movie-item-poster:after {
+    position: absolute;
+    content: '🎬';
+    font-size: 3em;
+    z-index: -1;
+    top: 25%;
+    left: 0;
+    right: 0;
+}
+
+@media screen and (max-width: 720px) {
+    .movie-item {
+        flex-basis: 49%;
+    }
+}

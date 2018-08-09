@@ -1,0 +1,55 @@
+.movie-search {
+    margin: 20px;
+}
+
+.movie-search-control {
+    position: relative;
+    margin: 40px auto 60px;
+    width: 80%;
+    height: 80px;
+}
+
+.movie-search-label {
+    position: absolute; 
+    bottom: 102%;
+    font-size: 1.2em;
+}
+
+.movie-search-input {
+    box-sizing: border-box;
+    height: 100%;
+    font-size: 2em;
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    width:100%;
+    border-width: 1px;
+    padding: 0 4em 0 .5em;
+    border: 1px solid #ccc;
+}
+
+.movie-search-button {
+    font-size: 1.5rem;
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
+    vertical-align: top;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding: 0 1em;
+    border: 1px solid #ccc;
+}
+
+.movie-search-error {
+    font-weight: 400;
+    font-size: 1.2em;
+    color: red;
+}
+
+.movie-search-results {
+    display: flex;
+    flex-flow: row wrap;
+    margin: 20px 0;
+    padding: 0;
+    justify-content: space-evenly;
+}
