@@ -30,7 +30,8 @@ class MovieSearch extends Component {
                 error: json.error,
                 isFetching: false
             })
-        })
+        });
+
     }
 
     render() {
