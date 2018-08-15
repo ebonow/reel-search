@@ -6,14 +6,14 @@ const ERRORS = {
     EMPTY: {error: 'Please enter a search term'},
 };
 
-export function fetchMoviesByTerm(term) {
+export function fetchMovies({term, page}) {
     if (!term.trim().length) {
         return ERRORS.EMPTY;
     }
 
-    const url = `${apiUrl}?s=${term}&apikey=${apiKey}&r=json`;
+    const url = `${apiUrl}?s=${term}&apikey=${apiKey}&r=json&page=${page}&type=movie`;
 
-    return getJson(url).then(serviceMapper.fetchMoviesByTerm);
+    return getJson(url).then(serviceMapper.fetchMovies);
 }
 
 export function fetchMovieInfoById(id) {
@@ -37,8 +37,8 @@ const getJson = (url) => fetch(url)
     .catch(error => ({Error: error.message }));
 
 const serviceMapper = {
-    fetchMoviesByTerm: (json) => {
-        const results = (json.Search || []).map(serviceMapper.fetchMoviesByTermResults);
+    fetchMovies: (json) => {
+        const results = (json.Search || []).map(serviceMapper.fetchMoviesResults);
         
         return {
             results,
@@ -46,7 +46,7 @@ const serviceMapper = {
             error: json.Error
         }; 
     },
-    fetchMoviesByTermResults: (result={}) => ({
+    fetchMoviesResults: (result={}) => ({
         imdbID: result.imdbID,
         title: result.Title,
         year: result.Year,

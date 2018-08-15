@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
+import CN from 'classnames';
 
 import MovieItem from './MovieItem.js';
 
-import {fetchMoviesByTerm} from './service.js';
+import {fetchMovies} from './service.js';
 
 import '../css/MovieSearch.css';
 
@@ -13,30 +14,69 @@ class MovieSearch extends Component {
         this.state = {
             query: '',
             results: [],
-            isFetching: false
+            isFetching: false,
+            page: 0,
+            total: 0
         }
 
-        this.inputValue='';
-        this.fetchMovies = this.fetchMovies.bind(this);
+        this.onClick = {
+            search: this.onSearchButtonPress.bind(this),
+            prev:   this.onPrevButtonPress.bind(this),
+            next:   this.onNextButtonPress.bind(this) 
+        };
+
+        this.input = React.createRef();
     }
 
-    fetchMovies() {
-        this.setState({ isFetching: true });
-        
-        fetchMoviesByTerm(this.inputValue).then(json => {
+    onSearchButtonPress() {
+        this.inputValue = this.input.current.value;
+        this.getMovies(1);
+    }
+
+    onPrevButtonPress() {
+        const page = Math.max(1, this.state.page-1);
+        this.getMovies(page);
+    }
+
+    onNextButtonPress() {
+        const page = Math.min(Math.ceil(this.state.total/10), this.state.page+1);
+        this.getMovies(page);
+    }
+
+    getMovies(page) {
+        this.setState({ page, isFetching: true });
+        const req = {page, term: this.inputValue};
+
+        fetchMovies(req).then(({results=[], total, error}) => {
             this.setState({
-                results: json.results || [],
-                total: json.total,
-                error: json.error,
+                results, 
+                total,
+                error,
                 isFetching: false
             })
         });
+    }
 
+    getResultsText() {
+        const {results=[], page, total} = this.state;
+        const len = results.length;
+        const i = (10 * page) - 9;
+        
+        const range = (len === 1) ? i : `${i} - ${i + len - 1}`;
+        
+        return `Showing ${range} of ${total} results`;
+    }
+
+    componentDidMount() {
+        this.input.current.focus();
     }
 
     render() {
-        const {results=[], total, error} = this.state;
+        const {results=[], total, error, page, isFetching} = this.state;
         const {onSelect} = this.props;
+        
+        const showPrev = page > 1;
+        const showNext = page < Math.ceil(total/10);
 
         return (
             <section className="movie-search">
@@ -46,18 +86,20 @@ class MovieSearch extends Component {
                         id="movie-search-input"
                         className="movie-search-input"
                         type="text"
-                        onInput={event=>this.inputValue=event.target.value}
+                        ref={this.input}
                     /> 
 
                     <button 
                         className="movie-search-button" 
-                        onClick={this.fetchMovies} 
+                        onClick={this.onClick.search} 
                         aria-label="Search">🔍</button>
                 </div>
 
                 {(!!results.length && !!total) && 
                 <div className="movie-search-status">
-                    {`Showing ${results.length} of ${total} results`}
+                    <button className={CN({'hidden':!showPrev})} onClick={this.onClick.prev} disabled={isFetching}>‹ Prev</button>
+                    {this.getResultsText()}
+                    <button className={CN({'hidden':!showNext})}  onClick={this.onClick.next} disabled={isFetching}>Next ›</button>
                 </div>
                 }
 
@@ -66,12 +108,9 @@ class MovieSearch extends Component {
                 }
 
                 <ul className="movie-search-results">
-                    {results.map(movie => 
-                        <MovieItem {...movie} 
-                            key={'movieItem-' + movie.imdbID} 
-                            onClick={onSelect}
-                        />
-                    )}
+                {results.map(movie => 
+                    <MovieItem {...movie} key={'item-' + movie.imdbID} onClick={onSelect} />
+                )}
                 </ul>
             </section>
         );
