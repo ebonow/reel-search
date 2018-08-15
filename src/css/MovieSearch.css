@@ -13,6 +13,11 @@
     position: absolute; 
     bottom: 102%;
     font-size: 1.2em;
+    text-align: left;
+    padding: 5px;
+    display: block;
+    width: 100%;
+    font-weight: bold;
 }
 
 .movie-search-input {
@@ -25,6 +30,7 @@
     border-width: 1px;
     padding: 0 4em 0 .5em;
     border: 1px solid #ccc;
+    opacity: .98;
 }
 
 .movie-search-button {
@@ -44,6 +50,36 @@
     font-weight: 400;
     font-size: 1.2em;
     color: red;
+}
+
+.movie-search-status {
+    display: flex;
+    flex-direction: row nowrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.movie-search-status button {
+    color: #eee;
+    background: #777;
+    border: 1px solid #000;
+    border-radius: 3px;
+    font-weight: bold;
+    margin: 0 25px;
+    padding: 6px 10px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.movie-search-status button:hover,
+.movie-search-status button:active {
+    background: #555;
+    box-shadow: inset 0 0 3px #000;
+}
+
+.movie-search-status button.hidden {
+    visibility: hidden;
 }
 
 .movie-search-results {

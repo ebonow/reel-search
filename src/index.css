@@ -1,8 +1,29 @@
+* {
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+}
+
 body {
   margin: 0;
-  padding: 0;
+  padding: 4em 1em 1em;
   font-family: sans-serif;
-  background: url('trianglify.svg') no-repeat fixed;
+  background: url('./assets/trianglify.svg') no-repeat fixed;
+  background-size: cover;
+  overflow-x: hidden;
+}
+
+body:after {
+  content:'📽️';
+  display: block;
+  position: absolute;
+  top: -20px;
+  text-align: center;
+  z-index: -1;
+  width: 100%;
+  font-size: 16em;
+  filter: opacity(.5)
 }
 
 body.overlay {

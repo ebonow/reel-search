@@ -1,3 +1,26 @@
+@font-face {
+  font-family: "Cinema St";
+  src: 
+    url('../assets/cinema_st.woff') format('woff'),
+    url('../assets/cinema_st.ttf') format('truetype');
+}
+
 .app {
   text-align: center;
+}
+
+.app-header {
+  position: relative;
+  margin: 1em 0;
+  padding: 0;
+  font-family: 'Cinema St', 'Courier New', Courier, monospace;
+  font-size: 4em;
+  text-shadow: 0 0 2px rgba(247, 228, 63, 0.637);
+  display: inline;
+  background: linear-gradient(
+    rgba(255,255,255, .8),
+    rgba(255,255,255, .8) 55%,
+    rgba(255,255,255, 0)
+  );
+  line-height: .9em;
 }

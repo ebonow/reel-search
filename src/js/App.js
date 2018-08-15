@@ -44,7 +44,9 @@ class App extends Component {
     
     return (
       <div className="app">
-        <h1 className="app-header">Reel Search</h1>
+        <header className="app-header-wrap">
+          <h1 className="app-header">Reel Search</h1>
+        </header>
         <MovieSearch onSelect={this.onSelectMovie} />
         <MovieInfo {...selectedMovie} 
           onClose={this.closeMovieInfo}
