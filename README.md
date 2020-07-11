@@ -9,7 +9,10 @@ A responsive [React](https://reactjs.org/) web application to search movie infor
 Live demo [here](https://ebonow.github.io/reel-search/index.html)
 
 
+## Todo
+
+Remove search button and debounce user input to automatically filter input results
+
 ## Notes
 
-- This application also has an autocomplete functionality which was developed but not implemented as it was not part of requirements.
 - UI/UX/CSS recommendation are welcome!
