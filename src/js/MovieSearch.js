@@ -1,120 +1,82 @@
-import React, {Component} from 'react';
-import CN from 'classnames';
-
+import React, { useState } from 'react';
 import MovieItem from './MovieItem.js';
-
-import {fetchMovies} from './service.js';
+import { fetchMovies } from './service.js';
 
 import '../css/MovieSearch.css';
 
-class MovieSearch extends Component {
-    constructor() {
-        super();
+export default function MovieSearch(props) {
+  const { onSelect } = props;
 
-        this.state = {
-            query: '',
-            results: [],
-            isFetching: false,
-            page: 0,
-            total: 0
-        }
+  const [ query, setQuery ] = useState('');
+  const [ results, setResults ] = useState([]);
+  const [ isFetching, setIsFetching ] = useState(false);
+  const [ page, setPage ] = useState(0);
+  const [ total, setTotal ] = useState(0);
+  const [ error, setError ] = useState();
 
-        this.onClick = {
-            search: this.onSearchButtonPress.bind(this),
-            prev:   this.onPrevButtonPress.bind(this),
-            next:   this.onNextButtonPress.bind(this) 
-        };
+  const getMovies = async (pg) => {
+    setIsFetching(true);
+    const resp = await fetchMovies({ term: query, page: pg });
+    
+    setResults(resp.results || []);
+    setPage(pg);
+    setTotal(resp.total);
+    setError(resp.error);
+    setIsFetching(false);
+  }
 
-        this.input = React.createRef();
-    }
+  const prevPage = Math.max(1, page-1);
+  const nextPage = Math.min(Math.ceil(total/10), page+1);
 
-    onSearchButtonPress() {
-        this.inputValue = this.input.current.value;
-        this.getMovies(1);
-    }
+  const getResultsText = () => {
+    const len = results.length;
+    const i = (10 * page) - 9;
+    const range = (len === 1) ? i : `${i} - ${i + len - 1}`;
+  
+    return `Showing ${range} of ${total} results`;
+  }
 
-    onPrevButtonPress() {
-        const page = Math.max(1, this.state.page-1);
-        this.getMovies(page);
-    }
+  const onInputChange = e => setQuery(e.target.value);
+  const onSearch = () => getMovies(1);
+  const onPrev = () => getMovies(prevPage);
+  const onNext = () => getMovies(nextPage);
 
-    onNextButtonPress() {
-        const page = Math.min(Math.ceil(this.state.total/10), this.state.page+1);
-        this.getMovies(page);
-    }
+  const showPrev = page > 1;
+  const showNext = page < Math.ceil(total/10);
+  const resultsText = getResultsText();
 
-    getMovies(page) {
-        this.setState({ page, isFetching: true });
-        const req = {page, term: this.inputValue};
+  return (
+    <section className="movie-search">
+      <div className="movie-search-control">
+        <label htmlFor="movie-search-input" className="movie-search-label">Search for movies:</label>
+        <input 
+          id="movie-search-input"
+          className="movie-search-input"
+          type="text"
+          autoFocus
+          onChange={onInputChange}
+        /> 
 
-        fetchMovies(req).then(({results=[], total, error}) => {
-            this.setState({
-                results, 
-                total,
-                error,
-                isFetching: false
-            })
-        });
-    }
+        <button className="movie-search-button" onClick={onSearch}>
+          <span role="img" aria-label="Search" >🔍</span>
+        </button>
+      </div>
 
-    getResultsText() {
-        const {results=[], page, total} = this.state;
-        const len = results.length;
-        const i = (10 * page) - 9;
-        
-        const range = (len === 1) ? i : `${i} - ${i + len - 1}`;
-        
-        return `Showing ${range} of ${total} results`;
-    }
+      {(!!results.length && !!total) && 
+      <div className="movie-search-status">
+          <button  onClick={onPrev} disabled={isFetching} hidden={!showPrev}>‹ Prev</button>
+          { resultsText }
+          <button onClick={onNext} disabled={isFetching} hidden={!showNext}>Next ›</button>
+      </div>
+      }
 
-    componentDidMount() {
-        this.input.current.focus();
-    }
+      {(!!error) && <div className="movie-search-error">{error}</div> }
 
-    render() {
-        const {results=[], total, error, page, isFetching} = this.state;
-        const {onSelect} = this.props;
-        
-        const showPrev = page > 1;
-        const showNext = page < Math.ceil(total/10);
-
-        return (
-            <section className="movie-search">
-                <div className="movie-search-control">
-                    <label htmlFor="movie-search-input" className="movie-search-label">Search for movies:</label>
-                    <input 
-                        id="movie-search-input"
-                        className="movie-search-input"
-                        type="text"
-                        ref={this.input}
-                    /> 
-
-                    <button 
-                        className="movie-search-button" 
-                        onClick={this.onClick.search} 
-                        aria-label="Search">🔍</button>
-                </div>
-
-                {(!!results.length && !!total) && 
-                <div className="movie-search-status">
-                    <button className={CN({'hidden':!showPrev})} onClick={this.onClick.prev} disabled={isFetching}>‹ Prev</button>
-                    {this.getResultsText()}
-                    <button className={CN({'hidden':!showNext})}  onClick={this.onClick.next} disabled={isFetching}>Next ›</button>
-                </div>
-                }
-
-                {(!!error) && 
-                <div className="movie-search-error">{error}</div>
-                }
-
-                <ul className="movie-search-results">
-                {results.map(movie => 
-                    <MovieItem {...movie} key={'item-' + movie.imdbID} onClick={onSelect} />
-                )}
-                </ul>
-            </section>
-        );
-    }
+      <ul className="movie-search-results">
+        { results.map(movie => 
+          <MovieItem {...movie} key={movie.imdbID} onSelect={onSelect} />
+        )}
+      </ul>
+    </section>
+  )
 }
-
-export default MovieSearch;
